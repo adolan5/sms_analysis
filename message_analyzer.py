@@ -23,6 +23,9 @@ class message_analyzer:
         return {name: [m for m in self.all_messages if m.get('contact_name') ==
             name] for name in uniq_contacts}
 
+    def get_messages_by_direction(self, message_list):
+        return {'sent': [m for m in message_list if m.get('type') == '2'], 'recv': [m for m in message_list if m.get('type') == '1']}
+
     def get_message_tokens(self, message_list):
         sym = re.compile('[^A-Za-z ]')
         full_body = re.sub(sym, '', ' '.join([m.get('body') for m in message_list if m.get('body') is not None]).lower())
