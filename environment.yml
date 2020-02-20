@@ -1,0 +1,8 @@
+name: sms
+channels:
+  - defaults
+dependencies:
+  - spacy
+  - numpy
+  - matplotlib
+  - pip
