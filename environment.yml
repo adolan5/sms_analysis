@@ -2,6 +2,7 @@ name: sms
 channels:
   - defaults
 dependencies:
+  - ipython
   - spacy
   - numpy
   - matplotlib
