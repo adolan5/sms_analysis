@@ -1,6 +1,11 @@
-from message_analyzer import message_analyzer
-# An example use of message_analyzer
+import logging
+from smsanalysis import MessageAnalyzer
 
-ma = message_analyzer('./sms-export.xml')
+logging.basicConfig()
+logging.getLogger('smsanalysis').setLevel(logging.DEBUG)
+logger = logging.getLogger(__name__)
+logger.setLevel(logging.DEBUG)
+
+ma = MessageAnalyzer('./data/sms-export.xml')
 # ma = message_analyzer('./sms-text-only.xml')
-print(ma)
+logger.info(ma)

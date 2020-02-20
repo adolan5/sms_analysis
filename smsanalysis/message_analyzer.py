@@ -1,12 +1,15 @@
-import nltk
+import logging
 import os
-import xml.etree.ElementTree as ET
-import time
 import re
+import time
+from xml.etree import ElementTree as ET
 
-class message_analyzer:
+logger = logging.getLogger(__name__)
+
+class MessageAnalyzer:
     def __init__(self, sms_export):
         if not os.path.exists(sms_export):
+            logger.error('Export {} does not exist'.format(sms_export))
             raise Exception('Argument must be a path to an sms export')
         read_time_start = time.time()
         tree = ET.parse(sms_export)
@@ -19,9 +22,12 @@ class message_analyzer:
         return 'SMS message analyzer containing total of {} messages; took {:.02f} seconds to read data'.format(len(self.all_messages), self.read_time)
 
     def get_messages_by_contact(self):
-        uniq_contacts = set(m.get('contact_name') for m in self.all_messages)
-        return {name: [m for m in self.all_messages if m.get('contact_name') ==
-            name] for name in uniq_contacts}
+        organized_messages = {}
+        for m in self.all_messages:
+            cname = m.get('contact_name')
+            contact_key = m.get('address') if cname == '(Unknown)' else cname
+            organized_messages.setdefault(contact_key, []).append(m)
+        return organized_messages
 
     def get_messages_by_direction(self, message_list):
         return {'sent': [m for m in message_list if m.get('type') == '2'], 'recv': [m for m in message_list if m.get('type') == '1']}
