@@ -1,11 +1,40 @@
+import logging
+import os
 import re
+import time
+from xml.etree import ElementTree as ET
+
+logger = logging.getLogger(__name__)
 
 class MessageCollection:
-    def __init__(self, messages_list):
+    def __init__(self, sms_source):
+        if type(sms_source) is str:
+            messages_list = self._import_messages(sms_source)
+        elif type(sms_source) is list:
+            messages_list = sms_source
+        else:
+            logger.error('sms_source is expected to be a path to an sms export (str) or a list of messages')
+
         for m in messages_list:
             if m.get('contact_name') == '(Unknown)':
                 m['contact_name'] = m.get('address')
         self.messages = messages_list
+
+    def _import_messages(self, sms_source):
+        logger.debug('Attempting to import SMS messages from {}'.format(sms_source))
+        if not os.path.exists(sms_source):
+            logger.error('Export {} does not exist'.format(sms_source))
+            raise Exception('Argument must be a path to an sms export')
+        read_time_start = time.time()
+        tree = ET.parse(sms_source)
+        root = tree.getroot()
+        # TODO: This currently does not correctly pull data from MMS messages -
+        # those need to be handled differently
+        messages_list = [dict(m.items()) for m in root]
+        read_time_end = time.time()
+        read_time = read_time_end - read_time_start
+        logger.debug('Read {} messages in {} seconds'.format(len(messages_list), read_time))
+        return messages_list
 
     def get_contact_names(self):
         return set([m.get('contact_name') for m in self.messages])
@@ -23,18 +52,8 @@ class MessageCollection:
         return {'sent': MessageCollection([m for m in self.messages if m.get('type') == '2']),
                 'recv': MessageCollection([m for m in self.messages if m.get('type') == '1'])}
 
-    def get_message_tokens(self, lemmatize=False, spacy_model=None):
-        sym = re.compile('[^A-Za-z -]')
-        dashes = re.compile('[-/]')
-        spaces = re.compile('[ ]{2,}')
-        full_body = re.sub(sym, '', ' '.join([m.get('body') for m in self.messages if m.get('body') is not None]).lower())
-        full_body = re.sub(dashes, ' ', full_body)
-        full_body = re.sub(spaces, ' ', full_body)
-
-        if lemmatize and spacy_model is not None:
-            return [t.lemma_ for t in spacy_model(full_body)]
-        else:
-            return full_body.split(' ')
+    def __iter__(self):
+        return iter(self.messages)
 
     def __len__(self):
         return len(self.messages)

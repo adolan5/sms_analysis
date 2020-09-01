@@ -1,23 +1,26 @@
 import logging
-import os
 import re
-import time
-from xml.etree import ElementTree as ET
 from smsanalysis.message_collection import MessageCollection
 
 logger = logging.getLogger(__name__)
 
 class MessageAnalyzer:
-    def __init__(self, sms_export):
-        if not os.path.exists(sms_export):
-            logger.error('Export {} does not exist'.format(sms_export))
-            raise Exception('Argument must be a path to an sms export')
-        read_time_start = time.time()
-        tree = ET.parse(sms_export)
-        read_time_end = time.time()
-        self.read_time = read_time_end - read_time_start
-        root = tree.getroot()
-        self.all_messages = MessageCollection([dict(m.items()) for m in root])
+    def __init__(self, messages, spacy_model=None):
+        self.all_messages = messages
+        self.spacy_model = spacy_model
+
+    def get_message_tokens(self, lemmatize=False):
+        sym = re.compile('[^A-Za-z -]')
+        dashes = re.compile('[-/]')
+        spaces = re.compile('[ ]{2,}')
+        full_body = re.sub(sym, '', ' '.join([m.get('body') for m in self.all_messages if m.get('body') is not None]).lower())
+        full_body = re.sub(dashes, ' ', full_body)
+        full_body = re.sub(spaces, ' ', full_body)
+
+        if lemmatize and self.spacy_model is not None:
+            return [t.lemma_ for t in self.spacy_model(full_body)]
+        else:
+            return full_body.split(' ')
 
     def __repr__(self):
         return '<MessageAnalyzer|{} messages>'.format(len(self.all_messages))
