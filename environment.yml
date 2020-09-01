@@ -6,4 +6,3 @@ dependencies:
   - spacy
   - numpy
   - matplotlib
-  - pip
