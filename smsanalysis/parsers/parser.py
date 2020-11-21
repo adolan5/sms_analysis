@@ -12,10 +12,10 @@ class Parser:
 
     def __init__(self, sms_source):
         read_time_start = time.time()
-        messages_list = self._import_messages(sms_source)
+        self.messages_list = self._import_messages(sms_source)
         read_time_end = time.time()
         read_time = read_time_end - read_time_start
-        logger.debug('Read {} messages in {} seconds'.format(len(messages_list), read_time))
+        logger.debug('Read {} messages in {} seconds'.format(len(self.messages_list), read_time))
 
     def _import_messages(self, sms_source):
         """Read messages from the SMS export data source.
