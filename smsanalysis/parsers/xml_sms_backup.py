@@ -7,8 +7,8 @@ logger = logging.getLogger(__name__)
 
 # TODO
 class XMLParser(Parser):
-    def __init__(self, sms_source):
-        super().__init__(sms_source)
+    def __init__(self):
+        super().__init__()
 
     def _import_messages(self, sms_source):
         logger.debug('Importing SMS data from SMS Backup XML')
