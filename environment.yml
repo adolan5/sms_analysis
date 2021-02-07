@@ -6,3 +6,4 @@ dependencies:
   - spacy
   - numpy
   - matplotlib
+  - phonenumbers
