@@ -1,40 +1,15 @@
 import logging
-import os
-import re
-import time
-from xml.etree import ElementTree as ET
 
 logger = logging.getLogger(__name__)
 
 class MessageCollection:
-    def __init__(self, sms_source):
-        if type(sms_source) is str:
-            messages_list = self._import_messages(sms_source)
-        elif type(sms_source) is list:
-            messages_list = sms_source
-        else:
-            logger.error('sms_source is expected to be a path to an sms export (str) or a list of messages')
+    def __init__(self, messages_list):
 
         for m in messages_list:
             if m.get('contact_name') == '(Unknown)':
                 m['contact_name'] = m.get('address')
         self.messages = messages_list
 
-    def _import_messages(self, sms_source):
-        logger.debug('Attempting to import SMS messages from {}'.format(sms_source))
-        if not os.path.exists(sms_source):
-            logger.error('Export {} does not exist'.format(sms_source))
-            raise Exception('Argument must be a path to an sms export')
-        read_time_start = time.time()
-        tree = ET.parse(sms_source)
-        root = tree.getroot()
-        # TODO: This currently does not correctly pull data from MMS messages -
-        # those need to be handled differently
-        messages_list = [dict(m.items()) for m in root]
-        read_time_end = time.time()
-        read_time = read_time_end - read_time_start
-        logger.debug('Read {} messages in {} seconds'.format(len(messages_list), read_time))
-        return messages_list
 
     def get_contact_names(self):
         return set([m.get('contact_name') for m in self.messages])
