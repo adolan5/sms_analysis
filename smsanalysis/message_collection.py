@@ -1,15 +1,14 @@
 import logging
+import phonenumbers
 
 logger = logging.getLogger(__name__)
 
+# TODO
 class MessageCollection:
-    def __init__(self, messages_list):
+    def __init__(self, messages_list=None):
 
-        for m in messages_list:
-            if m.get('contact_name') == '(Unknown)':
-                m['contact_name'] = m.get('address')
+        messages_list = list() if messages_list is None else messages_list
         self.messages = messages_list
-
 
     def get_contact_names(self):
         return set([m.get('contact_name') for m in self.messages])
@@ -27,8 +26,21 @@ class MessageCollection:
         return {'sent': MessageCollection([m for m in self.messages if m.get('type') == '2']),
                 'recv': MessageCollection([m for m in self.messages if m.get('type') == '1'])}
 
+    def append(self, message):
+        original_number = phonenumbers.parse(message.get('number'), 'US')
+        formatted_number = phonenumbers.format_number(original_number, phonenumbers.PhoneNumberFormat.E164)
+        message['number'] = formatted_number
+        self.messages.append(message)
+
+    def extend(self, other_message_collection):
+        for m in other_message_collection:
+            self.append(m)
+
     def __iter__(self):
         return iter(self.messages)
+
+    def __getitem__(self, key):
+        return self.messages[key]
 
     def __len__(self):
         return len(self.messages)

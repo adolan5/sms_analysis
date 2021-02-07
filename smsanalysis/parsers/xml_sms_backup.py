@@ -2,10 +2,10 @@ import logging
 import os
 from xml.etree import ElementTree as ET
 from smsanalysis.parsers import Parser
+from smsanalysis import MessageCollection
 
 logger = logging.getLogger(__name__)
 
-# TODO
 class XMLParser(Parser):
     def __init__(self):
         super().__init__()
@@ -20,7 +20,17 @@ class XMLParser(Parser):
             raise Exception('Argument must be a path to an sms export')
         tree = ET.parse(sms_source)
         root = tree.getroot()
-        # TODO: This currently does not correctly pull data from MMS messages -
-        # those need to be handled differently
-        messages_list = [dict(m.items()) for m in root]
-        return messages_list
+        messages = MessageCollection()
+        for m in root:
+            messages.append(self._process_message_parts(dict(m.items())))
+        return messages
+
+    """
+    TODO: This currently does not correctly pull data from MMS messages -
+    those need to be handled differently
+    """
+    def _process_message_parts(self, message_parts):
+        new_message = dict()
+        new_message['body'] = message_parts.get('body')
+        new_message['number']  = message_parts.get('address')
+        return new_message

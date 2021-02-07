@@ -1,5 +1,6 @@
 import logging
 import time
+from smsanalysis import MessageCollection
 
 logger = logging.getLogger(__name__)
 
@@ -21,7 +22,7 @@ class Parser:
         """
         sms_source_list = [sms_source] if type(sms_source) is str else sms_source
         read_time_start = time.time()
-        messages = list()
+        messages = MessageCollection()
         for source in sms_source_list:
             messages.extend(self._import_messages(source))
         read_time_end = time.time()
