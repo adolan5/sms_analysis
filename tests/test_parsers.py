@@ -6,8 +6,8 @@ class TestParser:
         self.assertEqual(5, len(self.messages))
 
     def test_message_ordering(self):
-        pass
-        # self.assertEqual("This is a text message.", self.messages)
+        self.assertEqual("This is a test text message.", self.messages[0].get('body'))
+        self.assertEqual("How's everything going with the SMS project?", self.messages[3].get('body'))
 
 class TestXMLParser(unittest.TestCase, TestParser):
     def setUp(self):
