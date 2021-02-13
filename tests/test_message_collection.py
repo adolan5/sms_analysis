@@ -1,12 +1,17 @@
 import unittest
+import copy
 from smsanalysis import MessageCollection
 from smsanalysis.parsers import XMLParser
 
 class TestMessageCollection(unittest.TestCase):
+    @classmethod
+    def setUpClass(cls):
+        parser = XMLParser()
+        cls.original_messages = parser.read_messages('./data/tests/sms-backup.xml')
+        cls.single_message = {'body': 'a message', 'number': '+14115555553'}
+
     def setUp(self):
-        self.parser = XMLParser()
-        self.messages = self.parser.read_messages('./data/tests/sms-backup.xml')
-        self.single_message = {'body': 'a message', 'number': '+14115555553'}
+        self.messages = copy.deepcopy(self.original_messages)
 
     def test_message_number_format(self):
         expected_numbers = set(['+14115555555', '+14115555554'])

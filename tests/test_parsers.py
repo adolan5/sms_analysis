@@ -10,6 +10,7 @@ class TestParser:
         self.assertEqual("How's everything going with the SMS project?", self.messages[3].get('body'))
 
 class TestXMLParser(unittest.TestCase, TestParser):
-    def setUp(self):
-        self.parser = XMLParser()
-        self.messages = self.parser.read_messages('./data/tests/sms-backup.xml')
+    @classmethod
+    def setUpClass(cls):
+        cls.parser = XMLParser()
+        cls.messages = cls.parser.read_messages('./data/tests/sms-backup.xml')
