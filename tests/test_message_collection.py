@@ -2,6 +2,7 @@ import unittest
 import copy
 from smsanalysis import MessageCollection
 from smsanalysis.parsers import XMLParser
+from jsonschema.exceptions import ValidationError
 
 class TestMessageCollection(unittest.TestCase):
     @classmethod
@@ -12,6 +13,7 @@ class TestMessageCollection(unittest.TestCase):
 
     def setUp(self):
         self.messages = copy.deepcopy(self.original_messages)
+        self.bad_message = {'body': 'a bad message', 'number': '+14115555553', 'extra field': 'bad'}
 
     def test_message_number_format(self):
         expected_numbers = set(['+14115555555', '+14115555554'])
@@ -44,3 +46,14 @@ class TestMessageCollection(unittest.TestCase):
         other_list = ['not', 'a', 'MessageCollection']
         with self.assertRaises(TypeError):
             self.messages.extend(other_list)
+
+    def test_validate(self):
+        # Circumvent formatting done by append
+        self.messages.messages.append(self.bad_message)
+        with self.assertRaises(ValidationError):
+            self.messages.validate()
+
+
+    def test_validate_on_create(self):
+        with self.assertRaises(ValidationError):
+            badmessages = MessageCollection([self.bad_message])

@@ -1,4 +1,7 @@
 import logging
+import pkg_resources
+import json
+import jsonschema
 import phonenumbers
 
 logger = logging.getLogger(__name__)
@@ -6,9 +9,17 @@ logger = logging.getLogger(__name__)
 # TODO
 class MessageCollection:
     def __init__(self, messages_list=None):
-
-        messages_list = list() if messages_list is None else messages_list
-        self.messages = messages_list
+        try:
+            schema_stream = pkg_resources.resource_stream(__name__, 'data/schema/message_collection.json')
+            self._schema = json.load(schema_stream)
+            schema_stream.close()
+        except:
+            logger.error('Failed to get message collection schema resource')
+        if messages_list is None:
+            self.messages = list()
+        else:
+            jsonschema.validate(messages_list, self._schema)
+            self.messages = message_list
 
     def get_contact_names(self):
         return set([m.get('contact_name') for m in self.messages])
@@ -38,6 +49,9 @@ class MessageCollection:
         if type(other_message_collection) is not MessageCollection:
             raise TypeError('other_message_collection must be a MessageCollection.')
         self.messages.extend(other_message_collection.messages)
+
+    def validate(self):
+        jsonschema.validate(self.messages, self._schema)
 
     def __iter__(self):
         return iter(self.messages)
