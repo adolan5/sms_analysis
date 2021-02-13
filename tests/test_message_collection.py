@@ -10,10 +10,10 @@ class TestMessageCollection(unittest.TestCase):
         parser = XMLParser()
         cls.original_messages = parser.read_messages('./data/tests/sms-backup.xml')
         cls.single_message = {'body': 'a message', 'number': '+14115555553'}
+        cls.bad_message = {'body': 'a bad message', 'number': '+14115555553', 'extra field': 'bad'}
 
     def setUp(self):
         self.messages = copy.deepcopy(self.original_messages)
-        self.bad_message = {'body': 'a bad message', 'number': '+14115555553', 'extra field': 'bad'}
 
     def test_message_number_format(self):
         expected_numbers = set(['+14115555555', '+14115555554'])
@@ -53,7 +53,12 @@ class TestMessageCollection(unittest.TestCase):
         with self.assertRaises(ValidationError):
             self.messages.validate()
 
-
     def test_validate_on_create(self):
+        bad_message_number_format = {'body': 'a message', 'number': 'a'}
+        another_bad_message_number_format = {'body': 'a message', 'number': '23'}
         with self.assertRaises(ValidationError):
             badmessages = MessageCollection([self.bad_message])
+        with self.assertRaises(ValidationError):
+            badmessages = MessageCollection([bad_message_number_format])
+        with self.assertRaises(ValidationError):
+            badmessages = MessageCollection([another_bad_message_number_format])

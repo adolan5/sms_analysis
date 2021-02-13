@@ -6,7 +6,6 @@ import phonenumbers
 
 logger = logging.getLogger(__name__)
 
-# TODO
 class MessageCollection:
     def __init__(self, messages_list=None):
         try:
