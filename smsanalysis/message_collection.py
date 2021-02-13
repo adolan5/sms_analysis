@@ -27,14 +27,17 @@ class MessageCollection:
                 'recv': MessageCollection([m for m in self.messages if m.get('type') == '1'])}
 
     def append(self, message):
+        if type(message) is not dict:
+            raise TypeError('message must be a formatted message.')
         original_number = phonenumbers.parse(message.get('number'), 'US')
         formatted_number = phonenumbers.format_number(original_number, phonenumbers.PhoneNumberFormat.E164)
         message['number'] = formatted_number
         self.messages.append(message)
 
     def extend(self, other_message_collection):
-        for m in other_message_collection:
-            self.append(m)
+        if type(other_message_collection) is not MessageCollection:
+            raise TypeError('other_message_collection must be a MessageCollection.')
+        self.messages.extend(other_message_collection.messages)
 
     def __iter__(self):
         return iter(self.messages)

@@ -1,12 +1,41 @@
 import unittest
+from smsanalysis import MessageCollection
 from smsanalysis.parsers import XMLParser
 
 class TestMessageCollection(unittest.TestCase):
     def setUp(self):
         self.parser = XMLParser()
         self.messages = self.parser.read_messages('./data/tests/sms-backup.xml')
+        self.single_message = {'body': 'a message', 'number': '+14115555553'}
 
     def test_message_number_format(self):
         expected_numbers = set(['+14115555555', '+14115555554'])
         numbers = set([m.get('number') for m in self.messages])
         self.assertEqual(expected_numbers, numbers)
+
+    def test_append(self):
+        other_mc = MessageCollection()
+        self.assertEqual(0, len(other_mc))
+        try:
+            other_mc.append(self.single_message)
+        except:
+            self.fail("Should not have thrown")
+        self.assertEqual(1, len(other_mc))
+
+    def test_append_exception(self):
+        with self.assertRaises(TypeError):
+            self.messages.append('fail')
+
+    def test_extend(self):
+        other_mc = MessageCollection()
+        other_mc.append(self.single_message)
+        try:
+            self.messages.extend(other_mc)
+        except:
+            self.fail("Should not have thrown")
+        self.assertEqual(6, len(self.messages))
+
+    def test_extend_exception(self):
+        other_list = ['not', 'a', 'MessageCollection']
+        with self.assertRaises(TypeError):
+            self.messages.extend(other_list)
