@@ -33,4 +33,6 @@ class XMLParser(Parser):
         new_message = dict()
         new_message['body'] = message_parts.get('body')
         new_message['number']  = message_parts.get('address')
+        direction = message_parts.get('type')
+        new_message['sent'] = True if direction == 2 else False
         return new_message
