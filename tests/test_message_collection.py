@@ -10,7 +10,7 @@ class TestMessageCollection(unittest.TestCase):
         parser = XMLParser()
         cls.original_messages = parser.read_messages('./data/tests/sms-backup.xml')
         cls.single_message = {'body': 'a message', 'number': '+14115555553', 'sent': True}
-        cls.bad_message = {'body': 'a bad message', 'number': '+14115555553', 'extra field': 'bad'}
+        cls.bad_message = {'body': 'a bad message', 'number': '+14115555553', 'sent': True, 'extra field': 'bad'}
 
     def setUp(self):
         self.messages = copy.deepcopy(self.original_messages)
