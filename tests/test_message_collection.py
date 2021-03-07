@@ -9,7 +9,7 @@ class TestMessageCollection(unittest.TestCase):
     def setUpClass(cls):
         parser = XMLParser()
         cls.original_messages = parser.read_messages('./data/tests/sms-backup.xml')
-        cls.single_message = {'body': 'a message', 'number': '+14115555553'}
+        cls.single_message = {'body': 'a message', 'number': '+14115555553', 'sent': True}
         cls.bad_message = {'body': 'a bad message', 'number': '+14115555553', 'extra field': 'bad'}
 
     def setUp(self):
@@ -26,7 +26,7 @@ class TestMessageCollection(unittest.TestCase):
         try:
             other_mc.append(self.single_message)
         except:
-            self.fail("Should not have thrown")
+            self.fail('Should not have thrown')
         self.assertEqual(1, len(other_mc))
 
     def test_append_exception(self):
@@ -39,7 +39,7 @@ class TestMessageCollection(unittest.TestCase):
         try:
             self.messages.extend(other_mc)
         except:
-            self.fail("Should not have thrown")
+            self.fail('Should not have thrown')
         self.assertEqual(6, len(self.messages))
 
     def test_extend_exception(self):
@@ -48,6 +48,10 @@ class TestMessageCollection(unittest.TestCase):
             self.messages.extend(other_list)
 
     def test_validate(self):
+        try:
+            self.messages.validate()
+        except:
+            self.fail('Should not have thrown')
         # Circumvent formatting done by append
         self.messages.messages.append(self.bad_message)
         with self.assertRaises(ValidationError):
