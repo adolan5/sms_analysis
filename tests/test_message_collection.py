@@ -66,3 +66,8 @@ class TestMessageCollection(unittest.TestCase):
             badmessages = MessageCollection([bad_message_number_format])
         with self.assertRaises(ValidationError):
             badmessages = MessageCollection([another_bad_message_number_format])
+
+    def test_contact_dict(self):
+        expected_contacts = {'+14115555555': 'Alice', '+14115555554': 'Jeff'}
+        contacts = self.messages.get_contacts()
+        self.assertDictEqual(expected_contacts, contacts)
