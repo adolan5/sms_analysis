@@ -23,7 +23,7 @@ class TestParser:
 
     def test_contact_dict(self):
         expected_contacts = {'+14115555555': 'Alice', '+14115555554': 'Jeff'}
-        self.assertDictEqual(expected_contacts, self.parser.contacts)
+        self.assertEqual(expected_contacts, self.parser.contacts)
 
 class TestXMLParser(unittest.TestCase, TestParser):
     @classmethod
