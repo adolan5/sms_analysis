@@ -68,4 +68,6 @@ class MessageCollection:
         return len(self.messages)
 
     def __repr__(self):
-        return '<MessageCollection|{} messages>'.format(len(self.messages))
+        message_len = len(self.messages)
+        contact_len = 'None' if self._contacts is None else len(self._contacts)
+        return '<MessageCollection|{} messages| {} contacts>'.format(message_len, contact_len)
