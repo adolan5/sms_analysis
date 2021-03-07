@@ -1,2 +1,4 @@
 /**/__pycache__/
-*.xml
+data/*
+!data/tests
+*.pyc

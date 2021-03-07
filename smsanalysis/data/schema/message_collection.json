@@ -1,0 +1,25 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema",
+  "description": "Formatted collection of SMS messages.",
+  "type": "array",
+  "items": {
+    "type": "object",
+    "additionalProperties": false,
+    "required": ["body", "number", "sent"],
+    "properties": {
+      "body": {
+        "type": "string",
+        "description": "Body of individual message."
+      },
+      "number": {
+        "type": "string",
+        "pattern": "\\+?[0-9]{10,14}",
+        "description": "Formatted phone number associated with message."
+      },
+      "sent": {
+        "type": "boolean",
+        "description": "Whether this message was sent (true) or received (false)"
+      }
+    }
+  }
+}

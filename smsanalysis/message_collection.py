@@ -1,12 +1,27 @@
-import re
+import logging
+import pkg_resources
+import json
+import jsonschema
+import phonenumbers
+
+logger = logging.getLogger(__name__)
 
 class MessageCollection:
-    def __init__(self, messages_list):
-        for m in messages_list:
-            if m.get('contact_name') == '(Unknown)':
-                m['contact_name'] = m.get('address')
-        self.messages = messages_list
+    def __init__(self, messages_list=None):
+        try:
+            schema_stream = pkg_resources.resource_stream(__name__, 'data/schema/message_collection.json')
+            self._schema = json.load(schema_stream)
+            schema_stream.close()
+        except:
+            logger.error('Failed to get message collection schema resource')
+        if messages_list is None:
+            self.messages = list()
+        else:
+            jsonschema.validate(messages_list, self._schema)
+            self.messages = message_list
 
+    """
+    TODO: Requires Update
     def get_contact_names(self):
         return set([m.get('contact_name') for m in self.messages])
 
@@ -22,19 +37,29 @@ class MessageCollection:
     def get_messages_by_direction(self):
         return {'sent': MessageCollection([m for m in self.messages if m.get('type') == '2']),
                 'recv': MessageCollection([m for m in self.messages if m.get('type') == '1'])}
+    """
 
-    def get_message_tokens(self, lemmatize=False, spacy_model=None):
-        sym = re.compile('[^A-Za-z -]')
-        dashes = re.compile('[-/]')
-        spaces = re.compile('[ ]{2,}')
-        full_body = re.sub(sym, '', ' '.join([m.get('body') for m in self.messages if m.get('body') is not None]).lower())
-        full_body = re.sub(dashes, ' ', full_body)
-        full_body = re.sub(spaces, ' ', full_body)
+    def append(self, message):
+        if type(message) is not dict:
+            raise TypeError('message must be a formatted message.')
+        original_number = phonenumbers.parse(message.get('number'), 'US')
+        formatted_number = phonenumbers.format_number(original_number, phonenumbers.PhoneNumberFormat.E164)
+        message['number'] = formatted_number
+        self.messages.append(message)
 
-        if lemmatize and spacy_model is not None:
-            return [t.lemma_ for t in spacy_model(full_body)]
-        else:
-            return full_body.split(' ')
+    def extend(self, other_message_collection):
+        if type(other_message_collection) is not MessageCollection:
+            raise TypeError('other_message_collection must be a MessageCollection.')
+        self.messages.extend(other_message_collection.messages)
+
+    def validate(self):
+        jsonschema.validate(self.messages, self._schema)
+
+    def __iter__(self):
+        return iter(self.messages)
+
+    def __getitem__(self, key):
+        return self.messages[key]
 
     def __len__(self):
         return len(self.messages)
