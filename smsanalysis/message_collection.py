@@ -7,6 +7,7 @@ logger = logging.getLogger(__name__)
 
 class MessageCollection:
     def __init__(self, messages_list=None):
+        self._contacts = None
         try:
             schema_stream = pkg_resources.resource_stream(__name__, 'data/schema/message_collection.json')
             self._schema = json.load(schema_stream)
@@ -18,6 +19,12 @@ class MessageCollection:
         else:
             jsonschema.validate(messages_list, self._schema)
             self.messages = message_list
+
+    def set_contacts(self, contacts):
+        self._contacts = contacts
+
+    def get_contacts(self):
+        return self._contacts
 
     """
     TODO: Requires Update

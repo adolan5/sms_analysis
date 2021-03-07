@@ -13,7 +13,8 @@ class Parser:
     """
 
     def __init__(self):
-        self.read_time = 0 # read_time_end - read_time_start
+        self.read_time = 0
+        self.contacts = None
 
     def read_messages(self, sms_source):
         """Read messages from one or more SMS export data sources and return them
@@ -29,6 +30,8 @@ class Parser:
         read_time_end = time.time()
         self.read_time = read_time_end - read_time_start
         logger.debug('Read {} messages in {} seconds'.format(len(messages), self.read_time))
+        if self.contacts is not None:
+            messages.set_contacts(self.contacts)
         return messages
 
 
