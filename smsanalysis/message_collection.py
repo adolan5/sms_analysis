@@ -18,13 +18,25 @@ class MessageCollection:
             self.messages = list()
         else:
             jsonschema.validate(messages_list, self._schema)
-            self.messages = message_list
+            self.messages = messages_list
 
     def set_contacts(self, contacts):
         self._contacts = contacts
 
     def get_contacts(self):
         return self._contacts
+
+    def get_messages_for_number(self, number):
+        matching_messages = [m for m in self.messages if m['number'] == number]
+        return MessageCollection(matching_messages)
+
+    def get_messages_for_contact(self, contact_name):
+        matching_numbers = [k for (k,v) in self._contacts.items() if v == contact_name]
+        matching_collections = [self.get_messages_for_number(n) for n in matching_numbers]
+        full_collection = MessageCollection()
+        for m in matching_collections:
+            full_collection.extend(m)
+        return full_collection
 
     """
     TODO: Requires Update
