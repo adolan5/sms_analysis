@@ -1,5 +1,6 @@
 import logging
 import time
+import phonenumbers
 from smsanalysis import MessageCollection
 
 logger = logging.getLogger(__name__)
@@ -38,3 +39,7 @@ class Parser:
         implement this function.
         """
         pass
+
+    def _format_number(self, number):
+        original_number = phonenumbers.parse(number, 'US')
+        return phonenumbers.format_number(original_number, phonenumbers.PhoneNumberFormat.E164)

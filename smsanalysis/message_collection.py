@@ -2,7 +2,6 @@ import logging
 import pkg_resources
 import json
 import jsonschema
-import phonenumbers
 
 logger = logging.getLogger(__name__)
 
@@ -42,9 +41,6 @@ class MessageCollection:
     def append(self, message):
         if type(message) is not dict:
             raise TypeError('message must be a formatted message.')
-        original_number = phonenumbers.parse(message.get('number'), 'US')
-        formatted_number = phonenumbers.format_number(original_number, phonenumbers.PhoneNumberFormat.E164)
-        message['number'] = formatted_number
         self.messages.append(message)
 
     def extend(self, other_message_collection):

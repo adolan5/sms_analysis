@@ -15,11 +15,6 @@ class TestMessageCollection(unittest.TestCase):
     def setUp(self):
         self.messages = copy.deepcopy(self.original_messages)
 
-    def test_message_number_format(self):
-        expected_numbers = set(['+14115555555', '+14115555554'])
-        numbers = set([m.get('number') for m in self.messages])
-        self.assertEqual(expected_numbers, numbers)
-
     def test_append(self):
         other_mc = MessageCollection()
         self.assertEqual(0, len(other_mc))
@@ -66,8 +61,3 @@ class TestMessageCollection(unittest.TestCase):
             badmessages = MessageCollection([bad_message_number_format])
         with self.assertRaises(ValidationError):
             badmessages = MessageCollection([another_bad_message_number_format])
-
-    def test_contact_dict(self):
-        expected_contacts = {'+14115555555': 'Alice', '+14115555554': 'Jeff'}
-        contacts = self.messages.get_contacts()
-        self.assertDictEqual(expected_contacts, contacts)

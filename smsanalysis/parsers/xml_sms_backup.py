@@ -30,9 +30,10 @@ class XMLParser(Parser):
     those need to be handled differently
     """
     def _process_message_parts(self, message_parts):
+        formatted_number = self._format_number(message_parts.get('address'))
         new_message = dict()
         new_message['body'] = message_parts.get('body')
-        new_message['number']  = message_parts.get('address')
+        new_message['number'] = formatted_number
         direction = message_parts.get('type')
         new_message['sent'] = True if direction == '2' else False
         return new_message
