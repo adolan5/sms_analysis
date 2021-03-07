@@ -5,7 +5,7 @@
   "items": {
     "type": "object",
     "additionalProperties": false,
-    "required": ["body", "number"],
+    "required": ["body", "number", "sent"],
     "properties": {
       "body": {
         "type": "string",
@@ -15,6 +15,10 @@
         "type": "string",
         "pattern": "\\+?[0-9]{10,14}",
         "description": "Formatted phone number associated with message."
+      },
+      "sent": {
+        "type": "boolean",
+        "description": "Whether this message was sent (true) or received (false)"
       }
     }
   }
