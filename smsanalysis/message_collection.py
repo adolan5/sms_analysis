@@ -20,6 +20,8 @@ class MessageCollection:
             jsonschema.validate(messages_list, self._schema)
             self.messages = message_list
 
+    """
+    TODO: Requires Update
     def get_contact_names(self):
         return set([m.get('contact_name') for m in self.messages])
 
@@ -35,6 +37,7 @@ class MessageCollection:
     def get_messages_by_direction(self):
         return {'sent': MessageCollection([m for m in self.messages if m.get('type') == '2']),
                 'recv': MessageCollection([m for m in self.messages if m.get('type') == '1'])}
+    """
 
     def append(self, message):
         if type(message) is not dict:
