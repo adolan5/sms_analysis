@@ -10,15 +10,13 @@ class TestMessageCollection(unittest.TestCase):
         parser = XMLParser()
         cls.original_messages = parser.read_messages('./data/tests/sms-backup.xml')
         cls.single_message = {'body': 'a message', 'number': '+14115555553', 'sent': True}
-        cls.bad_message = {'body': 'a bad message', 'number': '+14115555553', 'extra field': 'bad'}
+        cls.bad_message = {'body': 'a bad message', 'number': '+14115555553', 'sent': True, 'extra field': 'bad'}
+        cls.jeff_messages = [
+                {'body': 'How\'s everything going with the SMS project?', 'number': '+14115555554', 'sent': False},
+                {'body': 'Not too bad. Slow, but coming along!', 'number': '+14115555554', 'sent': True} ]
 
     def setUp(self):
         self.messages = copy.deepcopy(self.original_messages)
-
-    def test_message_number_format(self):
-        expected_numbers = set(['+14115555555', '+14115555554'])
-        numbers = set([m.get('number') for m in self.messages])
-        self.assertEqual(expected_numbers, numbers)
 
     def test_append(self):
         other_mc = MessageCollection()
@@ -66,3 +64,11 @@ class TestMessageCollection(unittest.TestCase):
             badmessages = MessageCollection([bad_message_number_format])
         with self.assertRaises(ValidationError):
             badmessages = MessageCollection([another_bad_message_number_format])
+
+    def test_get_messages_by_number(self):
+        jeff_message_collection = self.messages.get_messages_for_number('+14115555554')
+        self.assertEqual(self.jeff_messages, jeff_message_collection.messages)
+
+    def test_get_messages_by_contact(self):
+        jeff_message_collection = self.messages.get_messages_for_contact('Jeff')
+        self.assertEqual(self.jeff_messages, jeff_message_collection.messages)

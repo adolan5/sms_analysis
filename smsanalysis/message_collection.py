@@ -2,12 +2,12 @@ import logging
 import pkg_resources
 import json
 import jsonschema
-import phonenumbers
 
 logger = logging.getLogger(__name__)
 
 class MessageCollection:
     def __init__(self, messages_list=None):
+        self._contacts = None
         try:
             schema_stream = pkg_resources.resource_stream(__name__, 'data/schema/message_collection.json')
             self._schema = json.load(schema_stream)
@@ -18,7 +18,25 @@ class MessageCollection:
             self.messages = list()
         else:
             jsonschema.validate(messages_list, self._schema)
-            self.messages = message_list
+            self.messages = messages_list
+
+    def set_contacts(self, contacts):
+        self._contacts = contacts
+
+    def get_contacts(self):
+        return self._contacts
+
+    def get_messages_for_number(self, number):
+        matching_messages = [m for m in self.messages if m['number'] == number]
+        return MessageCollection(matching_messages)
+
+    def get_messages_for_contact(self, contact_name):
+        matching_numbers = [k for (k,v) in self._contacts.items() if v == contact_name]
+        matching_collections = [self.get_messages_for_number(n) for n in matching_numbers]
+        full_collection = MessageCollection()
+        for m in matching_collections:
+            full_collection.extend(m)
+        return full_collection
 
     """
     TODO: Requires Update
@@ -42,9 +60,6 @@ class MessageCollection:
     def append(self, message):
         if type(message) is not dict:
             raise TypeError('message must be a formatted message.')
-        original_number = phonenumbers.parse(message.get('number'), 'US')
-        formatted_number = phonenumbers.format_number(original_number, phonenumbers.PhoneNumberFormat.E164)
-        message['number'] = formatted_number
         self.messages.append(message)
 
     def extend(self, other_message_collection):
@@ -65,4 +80,6 @@ class MessageCollection:
         return len(self.messages)
 
     def __repr__(self):
-        return '<MessageCollection|{} messages>'.format(len(self.messages))
+        message_len = len(self.messages)
+        contact_len = 'None' if self._contacts is None else len(self._contacts)
+        return '<MessageCollection|{} messages| {} contacts>'.format(message_len, contact_len)
