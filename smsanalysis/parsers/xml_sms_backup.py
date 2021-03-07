@@ -9,6 +9,7 @@ logger = logging.getLogger(__name__)
 class XMLParser(Parser):
     def __init__(self):
         super().__init__()
+        self.contacts = dict()
 
     def _import_messages(self, sms_source):
         logger.debug('Importing SMS data from SMS Backup XML')
@@ -36,4 +37,5 @@ class XMLParser(Parser):
         new_message['number'] = formatted_number
         direction = message_parts.get('type')
         new_message['sent'] = True if direction == '2' else False
+        self.contacts[formatted_number] = message_parts.get('contact_name')
         return new_message
