@@ -49,5 +49,6 @@ class Parser:
             original_number = phonenumbers.parse(number, region)
             formatted_number = phonenumbers.format_number(original_number, phonenumbers.PhoneNumberFormat.E164)
         except:
+            logger.warning('Failed to convert number: {}'.format(number))
             formatted_number = number
         return formatted_number

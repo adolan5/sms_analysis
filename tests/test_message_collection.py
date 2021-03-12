@@ -57,24 +57,8 @@ class TestMessageCollection(unittest.TestCase):
             self.messages.validate()
 
     def test_validate_on_create(self):
-        bad_message_number_format = copy.deepcopy(self.single_message)
-        bad_message_number_format['number'] = 'a'
         with self.assertRaises(ValidationError):
             badmessages = MessageCollection([self.bad_message])
-        with self.assertRaises(ValidationError):
-            badmessages = MessageCollection([bad_message_number_format])
-        bad_message_number_format['number'] = '23'
-        with self.assertRaises(ValidationError):
-            badmessages = MessageCollection([bad_message_number_format])
-
-    def test_validate_cmas(self):
-        cmas_message = copy.deepcopy(self.single_message)
-        cmas_message['number'] = '#CMAS#CMASALL'
-        cmas_message['sent'] = False
-        try:
-            MessageCollection([cmas_message])
-        except:
-            self.fail('Should not have thrown')
 
     def test_get_messages_by_number(self):
         jeff_message_collection = self.messages.get_messages_for_number('+14115555554')
