@@ -43,6 +43,12 @@ class Parser:
         """
         pass
 
-    def _format_number(self, number):
-        original_number = phonenumbers.parse(number, 'US')
-        return phonenumbers.format_number(original_number, phonenumbers.PhoneNumberFormat.E164)
+    # TODO: Issue here with non-numbers like '#CMAS#CMASALL' - displayed as SMS (even though it isn't)
+    def _format_number(self, number, region='US'):
+        try:
+            original_number = phonenumbers.parse(number, region)
+            formatted_number = phonenumbers.format_number(original_number, phonenumbers.PhoneNumberFormat.E164)
+        except:
+            logger.warning('Failed to convert number: {}'.format(number))
+            formatted_number = number
+        return formatted_number

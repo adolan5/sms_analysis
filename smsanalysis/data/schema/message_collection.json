@@ -13,7 +13,6 @@
       },
       "number": {
         "type": "string",
-        "pattern": "\\+?[0-9]{10,14}",
         "description": "Formatted phone number associated with message."
       },
       "sent": {
