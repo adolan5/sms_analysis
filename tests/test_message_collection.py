@@ -10,7 +10,8 @@ class TestMessageCollection(unittest.TestCase):
         parser = XMLParser()
         cls.original_messages = parser.read_messages('./data/tests/sms-backup.xml')
         cls.single_message = {'body': 'a message', 'number': '+14115555553', 'sent': True}
-        cls.bad_message = {'body': 'a bad message', 'number': '+14115555553', 'sent': True, 'extra field': 'bad'}
+        cls.bad_message = copy.deepcopy(cls.single_message)
+        cls.bad_message['extra field'] = 'Bad'
         cls.jeff_messages = [
                 {'body': 'How\'s everything going with the SMS project?', 'number': '+14115555554', 'sent': False},
                 {'body': 'Not too bad. Slow, but coming along!', 'number': '+14115555554', 'sent': True} ]
@@ -56,14 +57,24 @@ class TestMessageCollection(unittest.TestCase):
             self.messages.validate()
 
     def test_validate_on_create(self):
-        bad_message_number_format = {'body': 'a message', 'number': 'a'}
-        another_bad_message_number_format = {'body': 'a message', 'number': '23'}
+        bad_message_number_format = copy.deepcopy(self.single_message)
+        bad_message_number_format['number'] = 'a'
         with self.assertRaises(ValidationError):
             badmessages = MessageCollection([self.bad_message])
         with self.assertRaises(ValidationError):
             badmessages = MessageCollection([bad_message_number_format])
+        bad_message_number_format['number'] = '23'
         with self.assertRaises(ValidationError):
-            badmessages = MessageCollection([another_bad_message_number_format])
+            badmessages = MessageCollection([bad_message_number_format])
+
+    def test_validate_cmas(self):
+        cmas_message = copy.deepcopy(self.single_message)
+        cmas_message['number'] = '#CMAS#CMASALL'
+        cmas_message['sent'] = False
+        try:
+            MessageCollection([cmas_message])
+        except:
+            self.fail('Should not have thrown')
 
     def test_get_messages_by_number(self):
         jeff_message_collection = self.messages.get_messages_for_number('+14115555554')
