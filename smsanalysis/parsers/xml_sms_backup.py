@@ -22,7 +22,9 @@ class XMLParser(Parser):
         tree = ET.parse(sms_source)
         root = tree.getroot()
         messages = MessageCollection()
+        # TODO: Skip MMS, for now
         for m in root:
+            if m.tag == 'mms': continue
             messages.append(self._process_message_parts(dict(m.items())))
         return messages
 
