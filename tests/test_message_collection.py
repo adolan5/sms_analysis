@@ -1,5 +1,6 @@
 import unittest
 import copy
+import json
 from smsanalysis import MessageCollection
 from smsanalysis.parsers import XMLParser
 from jsonschema.exceptions import ValidationError
@@ -58,7 +59,8 @@ class TestMessageCollection(unittest.TestCase):
 
     def test_validate_on_create(self):
         with self.assertRaises(ValidationError):
-            badmessages = MessageCollection([self.bad_message])
+            badmessages = MessageCollection()
+            badmessages.set_messages([self.bad_message])
 
     def test_get_messages_by_number(self):
         jeff_message_collection = self.messages.get_messages_for_number('+14115555554')
@@ -67,3 +69,21 @@ class TestMessageCollection(unittest.TestCase):
     def test_get_messages_by_contact(self):
         jeff_message_collection = self.messages.get_messages_for_contact('Jeff')
         self.assertEqual(self.jeff_messages, jeff_message_collection.messages)
+
+    def test_dump_messages(self):
+        with open('./data/tests/MessageCollection.json') as f:
+            expected_output = json.load(f)
+        mc_output = json.loads(self.messages.dump())
+        self.assertEqual(expected_output, mc_output)
+
+    def test_create_from_dump(self):
+        with self.assertRaises(FileNotFoundError):
+            MessageCollection(filename='./data/notfound')
+        with self.assertRaises(ValidationError):
+            MessageCollection(filename='./data/tests/IncorrectMessageCollection.json')
+        try:
+            new_mc = MessageCollection(filename='./data/tests/MessageCollection.json')
+        except:
+            self.fail('Should not have failed creation from file')
+        self.assertIsNotNone(new_mc.get_contacts())
+        self.assertGreater(len(new_mc.messages), 0)

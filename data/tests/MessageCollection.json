@@ -1,0 +1,33 @@
+{
+  "contacts": {
+    "+14115555555": "Alice",
+    "+14115555554": "Jeff"
+  },
+  "messages": [
+    {
+      "body": "This is a test text message.",
+      "number": "+14115555555",
+      "sent": true
+    },
+    {
+      "body": "This is also a test text message.",
+      "number": "+14115555555",
+      "sent": false
+    },
+    {
+      "body": "Excellent!",
+      "number": "+14115555555",
+      "sent": true
+    },
+    {
+      "body": "How's everything going with the SMS project?",
+      "number": "+14115555554",
+      "sent": false
+    },
+    {
+      "body": "Not too bad. Slow, but coming along!",
+      "number": "+14115555554",
+      "sent": true
+    }
+  ]
+}

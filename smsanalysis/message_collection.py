@@ -6,29 +6,37 @@ import jsonschema
 logger = logging.getLogger(__name__)
 
 class MessageCollection:
-    def __init__(self, messages_list=None):
-        self._contacts = None
+    def __init__(self, filename=None):
         try:
             schema_stream = pkg_resources.resource_stream(__name__, 'data/schema/message_collection.json')
             self._schema = json.load(schema_stream)
             schema_stream.close()
         except:
             logger.error('Failed to get message collection schema resource')
-        if messages_list is None:
-            self.messages = list()
-        else:
-            jsonschema.validate(messages_list, self._schema)
-            self.messages = messages_list
+        self._contacts = None
+        self.messages = list()
+        if filename is not None:
+            with open(filename) as f:
+                collection = json.load(f)
+            self.set_contacts(collection.get('contacts'))
+            self.set_messages(collection.get('messages'))
+            self.validate()
 
     def set_contacts(self, contacts):
         self._contacts = contacts
+
+    def set_messages(self, new_messages):
+        self.messages = new_messages
+        self.validate()
 
     def get_contacts(self):
         return self._contacts
 
     def get_messages_for_number(self, number):
         matching_messages = [m for m in self.messages if m['number'] == number]
-        return MessageCollection(matching_messages)
+        new_collection = MessageCollection()
+        new_collection.set_messages(matching_messages)
+        return new_collection
 
     def get_messages_for_contact(self, contact_name):
         matching_numbers = [k for (k,v) in self._contacts.items() if v == contact_name]
@@ -40,17 +48,8 @@ class MessageCollection:
 
     """
     TODO: Requires Update
-    def get_contact_names(self):
-        return set([m.get('contact_name') for m in self.messages])
-
     def get_message_bodies(self):
         return [m.get('body') for m in self.messages]
-
-    def get_messages_by_contact(self):
-        organized_messages = {}
-        for m in self.messages:
-            organized_messages.setdefault(m.get('contact_name'), []).append(m)
-        return {k: MessageCollection(v) for k, v in organized_messages.items()}
 
     def get_messages_by_direction(self):
         return {'sent': MessageCollection([m for m in self.messages if m.get('type') == '2']),
@@ -68,7 +67,17 @@ class MessageCollection:
         self.messages.extend(other_message_collection.messages)
 
     def validate(self):
-        jsonschema.validate(self.messages, self._schema)
+        jsonschema.validate(self._get_collection(), self._schema)
+
+    def dump(self, filename=None):
+        output = self._get_collection()
+        if filename is None:
+            return json.dumps(output)
+        with open(filename, 'w') as f:
+            json.dump(output, f)
+
+    def _get_collection(self):
+        return { 'contacts': self._contacts, 'messages': self.messages }
 
     def __iter__(self):
         return iter(self.messages)

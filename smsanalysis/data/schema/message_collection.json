@@ -1,23 +1,34 @@
 {
   "$schema": "http://json-schema.org/draft-07/schema",
-  "description": "Formatted collection of SMS messages.",
-  "type": "array",
-  "items": {
-    "type": "object",
-    "additionalProperties": false,
-    "required": ["body", "number", "sent"],
-    "properties": {
-      "body": {
-        "type": "string",
-        "description": "Body of individual message."
-      },
-      "number": {
-        "type": "string",
-        "description": "Formatted phone number associated with message."
-      },
-      "sent": {
-        "type": "boolean",
-        "description": "Whether this message was sent (true) or received (false)"
+  "description": "Formatted collection of SMS messages and optional contacts",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["messages"],
+  "properties": {
+    "contacts": {
+      "type": ["object", "null"],
+      "additionalProperties": { "type": "string" }
+    },
+    "messages": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["body", "number", "sent"],
+        "properties": {
+          "body": {
+            "type": "string",
+            "description": "Body of individual message."
+          },
+          "number": {
+            "type": "string",
+            "description": "Formatted phone number associated with message."
+          },
+          "sent": {
+            "type": "boolean",
+            "description": "Whether this message was sent (true) or received (false)"
+          }
+        }
       }
     }
   }
