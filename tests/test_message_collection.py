@@ -70,6 +70,16 @@ class TestMessageCollection(unittest.TestCase):
         jeff_message_collection = self.messages.get_messages_for_contact('Jeff')
         self.assertEqual(self.jeff_messages, jeff_message_collection.messages)
 
+    def test_get_messages_by_direction(self):
+        sent_messages = self.messages.get_messages_by_direction(sent=True)
+        received_messages = self.messages.get_messages_by_direction(sent=False)
+        for m in sent_messages:
+            self.assertTrue(m.get('sent'))
+        for m in received_messages:
+            self.assertFalse(m.get('sent'))
+        self.assertIsNotNone(sent_messages.get_contacts())
+        self.assertIsNotNone(received_messages.get_contacts())
+
     def test_dump_messages(self):
         with open('./data/tests/MessageCollection.json') as f:
             expected_output = json.load(f)
