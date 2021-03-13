@@ -1,5 +1,6 @@
 import unittest
 import copy
+import json
 from smsanalysis import MessageCollection
 from smsanalysis.parsers import XMLParser
 from jsonschema.exceptions import ValidationError
@@ -67,3 +68,9 @@ class TestMessageCollection(unittest.TestCase):
     def test_get_messages_by_contact(self):
         jeff_message_collection = self.messages.get_messages_for_contact('Jeff')
         self.assertEqual(self.jeff_messages, jeff_message_collection.messages)
+
+    def test_dump_messages(self):
+        with open('./data/tests/MessageCollection.json') as f:
+            expected_output = json.load(f)
+        mc_output = json.loads(self.messages.dumps())
+        self.assertEqual(expected_output, mc_output)
