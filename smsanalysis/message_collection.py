@@ -69,7 +69,7 @@ class MessageCollection:
     def validate(self):
         jsonschema.validate(self._get_collection(), self._schema)
 
-    def dumps(self, filename=None):
+    def dump(self, filename=None):
         output = self._get_collection()
         if filename is None:
             return json.dumps(output)

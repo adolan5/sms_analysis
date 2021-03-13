@@ -73,7 +73,7 @@ class TestMessageCollection(unittest.TestCase):
     def test_dump_messages(self):
         with open('./data/tests/MessageCollection.json') as f:
             expected_output = json.load(f)
-        mc_output = json.loads(self.messages.dumps())
+        mc_output = json.loads(self.messages.dump())
         self.assertEqual(expected_output, mc_output)
 
     def test_create_from_dump(self):
