@@ -74,3 +74,13 @@ class TestMessageCollection(unittest.TestCase):
             expected_output = json.load(f)
         mc_output = json.loads(self.messages.dumps())
         self.assertEqual(expected_output, mc_output)
+
+    def test_create_from_dump(self):
+        with self.assertRaises(FileNotFoundError):
+            MessageCollection(filename='./data/notfound')
+        with self.assertRaises(ValidationError):
+            MessageCollection(filename='./data/tests/IncorrectMessageCollection.json')
+        try:
+            MessageCollection(filename='./data/tests/MessageCollection.json')
+        except:
+            self.fail('Should not have failed creation from file')
