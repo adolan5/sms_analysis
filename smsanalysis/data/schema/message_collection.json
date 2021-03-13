@@ -2,20 +2,12 @@
   "$schema": "http://json-schema.org/draft-07/schema",
   "description": "Formatted collection of SMS messages and optional contacts",
   "type": "object",
+  "additionalProperties": false,
   "required": ["messages"],
   "properties": {
     "contacts": {
       "type": ["object", "null"],
-      "properties": {
-        "number": {
-          "type": "string",
-          "description": "Formatted phone number associated with message."
-        },
-        "name": {
-          "type": "string",
-          "description": "Contact name that number maps to."
-        }
-      }
+      "additionalProperties": { "type": "string" }
     },
     "messages": {
       "type": "array",
