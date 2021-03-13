@@ -42,17 +42,8 @@ class MessageCollection:
 
     """
     TODO: Requires Update
-    def get_contact_names(self):
-        return set([m.get('contact_name') for m in self.messages])
-
     def get_message_bodies(self):
         return [m.get('body') for m in self.messages]
-
-    def get_messages_by_contact(self):
-        organized_messages = {}
-        for m in self.messages:
-            organized_messages.setdefault(m.get('contact_name'), []).append(m)
-        return {k: MessageCollection(v) for k, v in organized_messages.items()}
 
     def get_messages_by_direction(self):
         return {'sent': MessageCollection([m for m in self.messages if m.get('type') == '2']),
