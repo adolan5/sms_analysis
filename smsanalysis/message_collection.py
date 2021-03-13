@@ -70,14 +70,17 @@ class MessageCollection:
         self.messages.extend(other_message_collection.messages)
 
     def validate(self):
-        jsonschema.validate(self.messages, self._schema)
+        jsonschema.validate(self._get_collection(), self._schema)
 
     def dumps(self, filename=None):
-        output = { 'contacts': self._contacts, 'messages': self.messages }
+        output = self._get_collection()
         if filename is None:
             return json.dumps(output)
         with open(filename, 'w') as f:
             json.dump(output, f)
+
+    def _get_collection(self):
+        return { 'contacts': self._contacts, 'messages': self.messages }
 
     def __iter__(self):
         return iter(self.messages)
