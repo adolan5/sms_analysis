@@ -87,3 +87,12 @@ class TestMessageCollection(unittest.TestCase):
             self.fail('Should not have failed creation from file')
         self.assertIsNotNone(new_mc.get_contacts())
         self.assertGreater(len(new_mc.messages), 0)
+
+    def test_get_message_bodies(self):
+        expected_messages = [
+                'This is a test text message.',
+                'This is also a test text message.',
+                'Excellent!',
+                'How\'s everything going with the SMS project?',
+                'Not too bad. Slow, but coming along!']
+        self.assertEqual(expected_messages, self.messages.get_message_bodies())

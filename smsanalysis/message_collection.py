@@ -46,11 +46,11 @@ class MessageCollection:
             full_collection.extend(m)
         return full_collection
 
-    """
-    TODO: Requires Update
     def get_message_bodies(self):
         return [m.get('body') for m in self.messages]
 
+    """
+    TODO: Requires Update
     def get_messages_by_direction(self):
         return {'sent': MessageCollection([m for m in self.messages if m.get('type') == '2']),
                 'recv': MessageCollection([m for m in self.messages if m.get('type') == '1'])}
