@@ -59,7 +59,8 @@ class TestMessageCollection(unittest.TestCase):
 
     def test_validate_on_create(self):
         with self.assertRaises(ValidationError):
-            badmessages = MessageCollection([self.bad_message])
+            badmessages = MessageCollection()
+            badmessages.set_messages([self.bad_message])
 
     def test_get_messages_by_number(self):
         jeff_message_collection = self.messages.get_messages_for_number('+14115555554')

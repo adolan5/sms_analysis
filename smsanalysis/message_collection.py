@@ -6,29 +6,31 @@ import jsonschema
 logger = logging.getLogger(__name__)
 
 class MessageCollection:
-    def __init__(self, messages_list=None):
+    def __init__(self, filename=None):
         self._contacts = None
+        self.messages = list()
         try:
             schema_stream = pkg_resources.resource_stream(__name__, 'data/schema/message_collection.json')
             self._schema = json.load(schema_stream)
             schema_stream.close()
         except:
             logger.error('Failed to get message collection schema resource')
-        if messages_list is None:
-            self.messages = list()
-        else:
-            jsonschema.validate(messages_list, self._schema)
-            self.messages = messages_list
 
     def set_contacts(self, contacts):
         self._contacts = contacts
+
+    def set_messages(self, new_messages):
+        self.messages = new_messages
+        self.validate()
 
     def get_contacts(self):
         return self._contacts
 
     def get_messages_for_number(self, number):
         matching_messages = [m for m in self.messages if m['number'] == number]
-        return MessageCollection(matching_messages)
+        new_collection = MessageCollection()
+        new_collection.set_messages(matching_messages)
+        return new_collection
 
     def get_messages_for_contact(self, contact_name):
         matching_numbers = [k for (k,v) in self._contacts.items() if v == contact_name]
