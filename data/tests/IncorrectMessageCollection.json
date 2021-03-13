@@ -1,0 +1,17 @@
+{
+  "contacts": {
+    "+14115555555": { "name": "Alice", "extrafield": "Fail" }
+  },
+  "messages": [
+    {
+      "body": "This is a test text message.",
+      "number": "+14115555555",
+      "sent": true
+    },
+    {
+      "body": "This is also a test text message.",
+      "number": "+14115555555",
+      "sent": false
+    }
+  ]
+}
