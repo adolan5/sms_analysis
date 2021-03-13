@@ -49,12 +49,12 @@ class MessageCollection:
     def get_message_bodies(self):
         return [m.get('body') for m in self.messages]
 
-    """
-    TODO: Requires Update
-    def get_messages_by_direction(self):
-        return {'sent': MessageCollection([m for m in self.messages if m.get('type') == '2']),
-                'recv': MessageCollection([m for m in self.messages if m.get('type') == '1'])}
-    """
+    def get_messages_by_direction(self, sent):
+        matching_messages = [m for m in self.messages if m['sent'] is sent]
+        new_collection = MessageCollection()
+        new_collection.set_messages(matching_messages)
+        new_collection.set_contacts(self._contacts)
+        return new_collection
 
     def append(self, message):
         if type(message) is not dict:
