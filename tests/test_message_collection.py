@@ -82,6 +82,8 @@ class TestMessageCollection(unittest.TestCase):
         with self.assertRaises(ValidationError):
             MessageCollection(filename='./data/tests/IncorrectMessageCollection.json')
         try:
-            MessageCollection(filename='./data/tests/MessageCollection.json')
+            new_mc = MessageCollection(filename='./data/tests/MessageCollection.json')
         except:
             self.fail('Should not have failed creation from file')
+        self.assertIsNotNone(new_mc.get_contacts())
+        self.assertGreater(len(new_mc.messages), 0)

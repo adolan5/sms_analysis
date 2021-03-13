@@ -7,14 +7,20 @@ logger = logging.getLogger(__name__)
 
 class MessageCollection:
     def __init__(self, filename=None):
-        self._contacts = None
-        self.messages = list()
         try:
             schema_stream = pkg_resources.resource_stream(__name__, 'data/schema/message_collection.json')
             self._schema = json.load(schema_stream)
             schema_stream.close()
         except:
             logger.error('Failed to get message collection schema resource')
+        self._contacts = None
+        self.messages = list()
+        if filename is not None:
+            with open(filename) as f:
+                collection = json.load(f)
+            self.set_contacts(collection.get('contacts'))
+            self.set_messages(collection.get('messages'))
+            self.validate()
 
     def set_contacts(self, contacts):
         self._contacts = contacts
